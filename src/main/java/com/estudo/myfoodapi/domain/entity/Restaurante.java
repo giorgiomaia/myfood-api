@@ -16,11 +16,13 @@ public class Restaurante {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(nullable = false)
     private String nome;
 
-    @Column(name = "taxa_frete")
+    @Column(nullable = false)
     private BigDecimal taxaFrete;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Cozinha cozinha;
 }
