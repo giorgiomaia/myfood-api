@@ -4,6 +4,7 @@ import com.estudo.myfoodapi.domain.entity.FormaPagamento;
 import com.estudo.myfoodapi.domain.repository.FormaPagamentoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,11 +26,13 @@ public class FormaPagamentoRepositoryImpl implements FormaPagamentoRepository {
     }
 
     @Override
+    @Transactional
     public FormaPagamento salvar(FormaPagamento formaPagamento) {
         return entityManager.merge(formaPagamento);
     }
 
     @Override
+    @Transactional
     public void remover(FormaPagamento formaPagamento) {
         formaPagamento = buscar(formaPagamento.getId());
         entityManager.remove(formaPagamento);
