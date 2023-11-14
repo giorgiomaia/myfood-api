@@ -1,10 +1,12 @@
 package com.estudo.myfoodapi.api.controller;
 
 import com.estudo.myfoodapi.domain.entity.Cozinha;
+import com.estudo.myfoodapi.domain.exception.EntidadeEmUsoException;
+import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.repository.CozinhaRepository;
+import com.estudo.myfoodapi.domain.service.CozinhaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,9 @@ public class CozinhaController {
 
     @Autowired
     private CozinhaRepository cozinhaRepository;
+
+    @Autowired
+    private CozinhaService cozinhaService;
 
     @GetMapping
     public List<Cozinha> listar() {
@@ -36,7 +41,7 @@ public class CozinhaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Cozinha salvar(@RequestBody Cozinha cozinha) {
-        return cozinhaRepository.salvar(cozinha);
+        return cozinhaService.salvar(cozinha);
     }
 
     @PutMapping("/{id}")
@@ -53,14 +58,13 @@ public class CozinhaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Cozinha> remover(@PathVariable Long id) {
         try {
-            Cozinha cozinha = cozinhaRepository.buscar(id);
-            if (Objects.nonNull(cozinha)) {
-                cozinhaRepository.remover(cozinha);
-                return ResponseEntity.noContent().build();
-            }
+            cozinhaService.remover(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.notFound().build();
 
-        } catch (DataIntegrityViolationException e) {
+        } catch (EntidadeEmUsoException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
