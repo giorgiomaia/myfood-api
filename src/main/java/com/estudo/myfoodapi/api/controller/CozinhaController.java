@@ -6,7 +6,6 @@ import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.repository.CozinhaRepository;
 import com.estudo.myfoodapi.domain.service.CozinhaService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +16,13 @@ import java.util.Objects;
 @RestController
 @RequestMapping(value = "/cozinhas")
 public class CozinhaController {
+    private final CozinhaRepository cozinhaRepository;
+    private final CozinhaService cozinhaService;
 
-    @Autowired
-    private CozinhaRepository cozinhaRepository;
-
-    @Autowired
-    private CozinhaService cozinhaService;
+    public CozinhaController(CozinhaService cozinhaService, CozinhaRepository cozinhaRepository) {
+        this.cozinhaService = cozinhaService;
+        this.cozinhaRepository = cozinhaRepository;
+    }
 
     @GetMapping
     public List<Cozinha> listar() {
