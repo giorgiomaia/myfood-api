@@ -4,9 +4,7 @@ import com.estudo.myfoodapi.domain.entity.Estado;
 import com.estudo.myfoodapi.domain.service.EstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,8 +20,14 @@ public class EstadoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Estado>> listar(){
-        return ResponseEntity.ok(estadoService.listar());
+    public List<Estado> listar() {
+        return estadoService.listar();
+    }
+
+    @PostMapping
+    public ResponseEntity<Estado> adicionar(@RequestBody Estado estado) {
+        estado = estadoService.salvar(estado);
+        return ResponseEntity.ok(estado);
     }
 
 }

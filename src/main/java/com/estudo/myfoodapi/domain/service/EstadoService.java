@@ -21,4 +21,8 @@ public class EstadoService {
         return estadoRepository.listar();
     }
 
+    public Estado salvar(Estado estado) {
+        return estadoRepository.salvar(estado);
+    }
+
 }
