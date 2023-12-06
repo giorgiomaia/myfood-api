@@ -3,6 +3,7 @@ package com.estudo.myfoodapi.api.controller;
 import com.estudo.myfoodapi.domain.entity.Restaurante;
 import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.service.RestauranteService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,21 @@ public class RestauranteController {
         try {
             restaurante = restauranteService.salvar(restaurante);
             return ResponseEntity.ok(restaurante);
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
+        try {
+            Restaurante atualizaRestaurante = restauranteService.buscar(id);
+            if (Objects.nonNull(atualizaRestaurante)) {
+                BeanUtils.copyProperties(restaurante, atualizaRestaurante, "id");
+                atualizaRestaurante = restauranteService.salvar(atualizaRestaurante);
+                return ResponseEntity.ok(atualizaRestaurante);
+            }
+            return ResponseEntity.notFound().build();
         } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
