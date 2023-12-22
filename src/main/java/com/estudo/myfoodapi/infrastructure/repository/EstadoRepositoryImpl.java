@@ -5,9 +5,11 @@ import com.estudo.myfoodapi.domain.repository.EstadoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class EstadoRepositoryImpl implements EstadoRepository {
@@ -33,8 +35,11 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 
     @Override
     @Transactional
-    public void remover(Estado estado) {
-        estado = buscar(estado.getId());
+    public void remover(Long id) {
+        Estado estado = buscar(id);
+        if (Objects.isNull(estado)) {
+            throw new EmptyResultDataAccessException(1);
+        }
         entityManager.remove(estado);
     }
 }
