@@ -3,12 +3,16 @@ package com.estudo.myfoodapi.api.controller;
 import com.estudo.myfoodapi.domain.entity.Restaurante;
 import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.service.RestauranteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -58,6 +62,30 @@ public class RestauranteController {
         } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
+        Restaurante atualizaRestaurante = restauranteService.buscar(id);
+        if (Objects.isNull(atualizaRestaurante)) {
+            return ResponseEntity.notFound().build();
+        }
+        atualizarParcialMerge(campos, atualizaRestaurante);
+        return atualizar(id, atualizaRestaurante);
+    }
+
+    private void atualizarParcialMerge(Map<String, Object> campos, Restaurante restauranteDestino) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Restaurante restaurante = objectMapper.convertValue(campos, Restaurante.class);
+
+        campos.forEach((nomePropriedade, valorPropriedade) -> {
+            Field field = ReflectionUtils.findField(Restaurante.class, nomePropriedade);
+            field.setAccessible(true);
+
+            Object valor = ReflectionUtils.getField(field, restaurante);
+
+            ReflectionUtils.setField(field, restauranteDestino, valor);
+        });
     }
 
 }
