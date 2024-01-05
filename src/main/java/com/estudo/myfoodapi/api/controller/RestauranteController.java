@@ -6,6 +6,7 @@ import com.estudo.myfoodapi.domain.service.RestauranteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -56,11 +57,11 @@ public class RestauranteController {
             if (Objects.nonNull(atualizaRestaurante)) {
                 BeanUtils.copyProperties(restaurante, atualizaRestaurante, "id");
                 atualizaRestaurante = restauranteService.salvar(atualizaRestaurante);
-                return ResponseEntity.ok(atualizaRestaurante);
+                return ResponseEntity.status(HttpStatus.OK).body(atualizaRestaurante);
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (EntidadeNaoEncontradaException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
