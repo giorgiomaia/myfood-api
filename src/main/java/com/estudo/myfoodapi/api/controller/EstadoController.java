@@ -41,7 +41,7 @@ public class EstadoController {
     @PostMapping
     public ResponseEntity<Estado> adicionar(@RequestBody Estado estado) {
         estado = estadoService.salvar(estado);
-        return ResponseEntity.ok(estado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(estado);
     }
 
     @PutMapping("/{id}")
@@ -65,7 +65,7 @@ public class EstadoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
         } catch (EntidadeEmUsoException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 

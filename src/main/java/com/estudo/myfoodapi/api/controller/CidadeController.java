@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cidades")
@@ -31,11 +32,8 @@ public class CidadeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Cidade> buscar(@PathVariable Long id) {
-        Cidade cidade = cidadeService.buscar(id);
-        if (Objects.nonNull(cidade)) {
-            return ResponseEntity.ok(cidade);
-        }
-        return ResponseEntity.notFound().build();
+        Optional<Cidade> cidade = cidadeService.buscar(id);
+        return cidade.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -52,7 +50,7 @@ public class CidadeController {
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Cidade cidade) {
         try {
-            Cidade atualizaCidade = cidadeService.buscar(id);
+            Cidade atualizaCidade = cidadeService.buscar(id).orElse(null);
             if (Objects.nonNull(atualizaCidade)) {
                 BeanUtils.copyProperties(cidade, atualizaCidade, "id");
                 atualizaCidade = cidadeService.salvar(atualizaCidade);
@@ -70,11 +68,13 @@ public class CidadeController {
         try {
             cidadeService.remover(id);
             return ResponseEntity.noContent().build();
+
         } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
 
-        } catch (EntidadeEmUsoException e){
+        } catch (EntidadeEmUsoException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
+
 }

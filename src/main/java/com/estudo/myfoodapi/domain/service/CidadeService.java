@@ -8,11 +8,10 @@ import com.estudo.myfoodapi.domain.repository.CidadeRepository;
 import com.estudo.myfoodapi.domain.repository.EstadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CidadeService {
@@ -27,39 +26,35 @@ public class CidadeService {
     }
 
     public List<Cidade> listar() {
-        return cidadeRepository.listar();
+        return cidadeRepository.findAll();
     }
 
-    public Cidade buscar(Long id) {
-        return cidadeRepository.buscar(id);
+    public Optional<Cidade> buscar(Long id) {
+        return cidadeRepository.findById(id);
     }
 
     public Cidade salvar(Cidade cidade) {
         Long estadoId = cidade.getEstado().getId();
-        Estado estado = estadoRepository.buscar(estadoId);
-        if (Objects.isNull(estado)) {
+        Optional<Estado> estado = estadoRepository.findById(estadoId);
+        if (estado.isEmpty()) {
             throw new EntidadeNaoEncontradaException(
                     String.format("Não existe um cadastro de estado com o código %d.", estadoId));
         }
-        cidade.setEstado(estado);
-        return cidadeRepository.salvar(cidade);
+        cidade.setEstado(estado.get());
+        return cidadeRepository.save(cidade);
     }
 
     public void remover(Long id) {
         try {
-        Cidade cidade = cidadeRepository.buscar(id);
-        cidadeRepository.remover(id);
-
-        } catch(EmptyResultDataAccessException e){
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de cidade com o código %d.", id)
-            );
+            Cidade cidade = cidadeRepository.findById(id).orElseThrow(() ->
+                    new EntidadeNaoEncontradaException(
+                            String.format("Não existe um cadastro de cidade com o código %d.", id)));
+            cidadeRepository.delete(cidade);
 
         } catch (DataIntegrityViolationException e) {
             throw new EntidadeEmUsoException(
-              String.format("Cidade de código %d não pode ser removida, pois está em uso.", id)
-            );
+                    String.format("Cidade de código %d não pode ser removida, pois está em uso.", id));
         }
-
     }
+
 }

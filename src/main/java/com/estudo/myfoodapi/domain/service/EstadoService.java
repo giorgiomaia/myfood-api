@@ -6,7 +6,6 @@ import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.repository.EstadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,24 +21,23 @@ public class EstadoService {
     }
 
     public List<Estado> listar() {
-        return estadoRepository.listar();
+        return estadoRepository.findAll();
     }
 
     public Estado buscar(Long id) {
-        return estadoRepository.buscar(id);
+        return estadoRepository.findById(id).orElse(null);
     }
 
     public Estado salvar(Estado estado) {
-        return estadoRepository.salvar(estado);
+        return estadoRepository.save(estado);
     }
 
     public void remover(Long id) {
         try {
-            estadoRepository.remover(id);
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException(
-                    String.format("Não existe um cadastro de estado com o código %d.", id));
+            Estado estado = estadoRepository.findById(id).orElseThrow(() ->
+                    new EntidadeNaoEncontradaException(
+                            String.format("Não existe um cadastro de estado com o código %d.", id)));
+            estadoRepository.delete(estado);
 
         } catch (DataIntegrityViolationException e) {
             throw new EntidadeEmUsoException(
