@@ -51,9 +51,7 @@ public class FormaPagamentoController {
         try {
             formaPagamentoService.remover(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
-        catch (EntidadeNaoEncontradaException e) {
+        } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
