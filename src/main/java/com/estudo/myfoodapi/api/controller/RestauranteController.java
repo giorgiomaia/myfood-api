@@ -12,6 +12,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,12 @@ public class RestauranteController {
     public ResponseEntity<Restaurante> buscar(@PathVariable Long id) {
         Optional<Restaurante> restaurante = restauranteService.buscar(id);
         return restaurante.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/por-filtro")
+    public ResponseEntity<List<Restaurante>> buscarPorFiltro(String nome, BigDecimal taxaFreteInicial,
+                                                             BigDecimal taxaFreteFinal) {
+        return ResponseEntity.ok(restauranteService.buscarPorFiltro(nome, taxaFreteInicial, taxaFreteFinal));
     }
 
     @PostMapping

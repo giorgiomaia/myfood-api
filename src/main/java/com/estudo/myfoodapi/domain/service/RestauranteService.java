@@ -8,6 +8,7 @@ import com.estudo.myfoodapi.domain.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,10 @@ public class RestauranteService {
 
     public Optional<Restaurante> buscar(Long id) {
         return restauranteRepository.findById(id);
+    }
+
+    public List<Restaurante> buscarPorFiltro(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
+        return restauranteRepository.buscarPorFiltro(nome, taxaInicial, taxaFinal);
     }
 
     public Restaurante salvar(Restaurante restaurante) {
