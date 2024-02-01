@@ -36,6 +36,10 @@ public class RestauranteService {
         return restauranteRepository.buscarPorFiltro(nome, taxaInicial, taxaFinal);
     }
 
+    public List<Restaurante> buscarPorFiltroCriteria(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
+        return restauranteRepository.buscarPorFiltroCriteria(nome, taxaInicial, taxaFinal);
+    }
+
     public Restaurante salvar(Restaurante restaurante) {
         Long cozinhaId = restaurante.getCozinha().getId();
         Cozinha cozinha = cozinhaRepository.findById(cozinhaId).orElseThrow(() ->
