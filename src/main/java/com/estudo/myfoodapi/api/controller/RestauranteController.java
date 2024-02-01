@@ -45,6 +45,12 @@ public class RestauranteController {
         return ResponseEntity.ok(restauranteService.buscarPorFiltro(nome, taxaFreteInicial, taxaFreteFinal));
     }
 
+    @GetMapping("/por-filtro-criteria")
+    public ResponseEntity<List<Restaurante>> buscarPorFiltroCriteria(String nome, BigDecimal taxaFreteInicial,
+                                                             BigDecimal taxaFreteFinal) {
+        return ResponseEntity.ok(restauranteService.buscarPorFiltroCriteria(nome, taxaFreteInicial, taxaFreteFinal));
+    }
+
     @PostMapping
     public ResponseEntity<?> adicionar(@RequestBody Restaurante restaurante) {
         try {
