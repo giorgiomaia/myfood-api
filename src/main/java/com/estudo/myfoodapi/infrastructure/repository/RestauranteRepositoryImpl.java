@@ -5,13 +5,15 @@ import com.estudo.myfoodapi.domain.repository.RestauranteRepositoryPersonalizado
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Repository
 public class RestauranteRepositoryImpl implements RestauranteRepositoryPersonalizado {
@@ -53,5 +55,30 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryPersonali
         TypedQuery<Restaurante> query = entityManager.createQuery(jpql.toString(), Restaurante.class);
         filtros.forEach(query::setParameter);
         return query;
+    }
+
+    // USANDO CONSULTAS COM CRITERIA
+    @Override
+    public List<Restaurante> buscarPorFiltroCriteria(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Restaurante> criteria = builder.createQuery(Restaurante.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        Root<Restaurante> restauranteRaiz = criteria.from(Restaurante.class);
+
+        if (StringUtils.hasText(nome)) {
+            predicates.add(builder.like(restauranteRaiz.get("nome"), "%" + nome + "%"));
+        }
+        if (Objects.nonNull(taxaInicial)) {
+            predicates.add(builder.greaterThanOrEqualTo(restauranteRaiz.get("taxaFrete"), taxaInicial));
+        }
+        if (Objects.nonNull(taxaFinal)) {
+            predicates.add(builder.lessThanOrEqualTo(restauranteRaiz.get("taxaFrete"), taxaFinal));
+        }
+
+        criteria.where(predicates.toArray(new Predicate[0]));
+
+        TypedQuery<Restaurante> query = entityManager.createQuery(criteria);
+        return query.getResultList();
     }
 }
