@@ -24,36 +24,37 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryPersonali
     @Override
     public List<Restaurante> buscarPorFiltro(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
         var jpql = new StringBuilder();
-        var filtros = new HashMap<String, Object>();
+        var parametros = new HashMap<String, Object>();
 
         jpql.append("FROM Restaurante ");
-        adicionarCriterios(nome, taxaInicial, taxaFinal, jpql, filtros);
-        TypedQuery<Restaurante> query = adicionarParams(jpql, filtros);
+        adicionarCriterios(nome, taxaInicial, taxaFinal, jpql, parametros);
+        TypedQuery<Restaurante> query = adicionarParams(jpql, parametros);
 
         return query.getResultList();
     }
 
-    private void adicionarCriterios(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal, StringBuilder jpql, HashMap<String, Object> filtro) {
+    private void adicionarCriterios(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal, StringBuilder jpql, HashMap<String, Object> parametros) {
         if (StringUtils.hasLength(nome) || Objects.nonNull(taxaInicial) || Objects.nonNull(taxaFinal)) {
             jpql.append("WHERE 0 = 0 ");
-        }
-        if (Objects.nonNull(nome)) {
-            jpql.append("AND UPPER(nome) like :nome ");
-            filtro.put("nome", "%" + nome.toUpperCase() + "%");
-        }
-        if (Objects.nonNull(taxaInicial)) {
-            jpql.append("AND taxaFrete >= :taxaInicial ");
-            filtro.put("taxaInicial", taxaInicial);
-        }
-        if (Objects.nonNull(taxaFinal)) {
-            jpql.append("AND taxaFrete <= :taxaFinal ");
-            filtro.put("taxaFinal", taxaFinal);
+
+            if (StringUtils.hasLength(nome)) {
+                jpql.append("AND UPPER(nome) like :nome ");
+                parametros.put("nome", "%" + nome.toUpperCase() + "%");
+            }
+            if (Objects.nonNull(taxaInicial)) {
+                jpql.append("AND taxaFrete >= :taxaInicial ");
+                parametros.put("taxaInicial", taxaInicial);
+            }
+            if (Objects.nonNull(taxaFinal)) {
+                jpql.append("AND taxaFrete <= :taxaFinal ");
+                parametros.put("taxaFinal", taxaFinal);
+            }
         }
     }
 
-    private TypedQuery<Restaurante> adicionarParams(StringBuilder jpql, HashMap<String, Object> filtros) {
+    private TypedQuery<Restaurante> adicionarParams(StringBuilder jpql, HashMap<String, Object> parametros) {
         TypedQuery<Restaurante> query = entityManager.createQuery(jpql.toString(), Restaurante.class);
-        filtros.forEach(query::setParameter);
+        parametros.forEach(query::setParameter);
         return query;
     }
 
@@ -62,7 +63,7 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryPersonali
     public List<Restaurante> buscarPorFiltroCriteria(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Restaurante> criteria = builder.createQuery(Restaurante.class);
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
 
         Root<Restaurante> restauranteRaiz = criteria.from(Restaurante.class);
 
