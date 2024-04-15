@@ -5,6 +5,8 @@ import com.estudo.myfoodapi.domain.entity.Restaurante;
 import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.repository.CozinhaRepository;
 import com.estudo.myfoodapi.domain.repository.RestauranteRepository;
+import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteFreteGratisSpec;
+import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteNomeSemelhanteSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,4 +51,8 @@ public class RestauranteService {
         return restauranteRepository.save(restaurante);
     }
 
+    public List<Restaurante> buscarFreteGratis(RestauranteFreteGratisSpec comFreteGratis,
+                                               RestauranteNomeSemelhanteSpec comNomeSemelhante) {
+        return restauranteRepository.findAll(comFreteGratis.and(comNomeSemelhante));
+    }
 }
