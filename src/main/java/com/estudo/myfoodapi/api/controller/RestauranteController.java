@@ -3,8 +3,6 @@ package com.estudo.myfoodapi.api.controller;
 import com.estudo.myfoodapi.domain.entity.Restaurante;
 import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.service.RestauranteService;
-import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteFreteGratisSpec;
-import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteNomeSemelhanteSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +53,7 @@ public class RestauranteController {
 
     @GetMapping("/com-frete-gratis-spec")
     public ResponseEntity<List<Restaurante>> buscarFreteGratisSpec(String nome) {
-        var comFreteGratis = new RestauranteFreteGratisSpec();
-        var comNomeSemelhante = new RestauranteNomeSemelhanteSpec(nome);
-        return ResponseEntity.ok(restauranteService.buscarFreteGratis(comFreteGratis, comNomeSemelhante));
+        return ResponseEntity.ok(restauranteService.buscarFreteGratis(nome));
     }
 
     @PostMapping

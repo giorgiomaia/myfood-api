@@ -5,14 +5,15 @@ import com.estudo.myfoodapi.domain.entity.Restaurante;
 import com.estudo.myfoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.estudo.myfoodapi.domain.repository.CozinhaRepository;
 import com.estudo.myfoodapi.domain.repository.RestauranteRepository;
-import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteFreteGratisSpec;
-import com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteNomeSemelhanteSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import static com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.estudo.myfoodapi.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
 
 @Service
 public class RestauranteService {
@@ -51,8 +52,7 @@ public class RestauranteService {
         return restauranteRepository.save(restaurante);
     }
 
-    public List<Restaurante> buscarFreteGratis(RestauranteFreteGratisSpec comFreteGratis,
-                                               RestauranteNomeSemelhanteSpec comNomeSemelhante) {
-        return restauranteRepository.findAll(comFreteGratis.and(comNomeSemelhante));
+    public List<Restaurante> buscarFreteGratis(String nome) {
+        return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
     }
 }
