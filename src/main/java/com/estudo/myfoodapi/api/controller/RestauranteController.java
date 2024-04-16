@@ -75,7 +75,7 @@ public class RestauranteController {
         try {
             Restaurante atualizaRestaurante = restauranteService.buscar(id).orElse(null);
             if (Objects.nonNull(atualizaRestaurante)) {
-                BeanUtils.copyProperties(restaurante, atualizaRestaurante, "id");
+                BeanUtils.copyProperties(restaurante, atualizaRestaurante, "id", "formasPagamento");
                 atualizaRestaurante = restauranteService.salvar(atualizaRestaurante);
                 return ResponseEntity.status(HttpStatus.OK).body(atualizaRestaurante);
             }
